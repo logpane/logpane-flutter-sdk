@@ -1,8 +1,14 @@
 name: logpane
-description: Lightweight analytics and error tracking SDK for Flutter. Self-hosted, privacy-friendly.
-version: 1.0.0
+description: Lightweight analytics and error tracking SDK for Flutter. Self-hosted, privacy-friendly event tracking and error monitoring.
+version: 0.1.0
 homepage: https://logpane.dev
-repository: https://github.com/gillmer-industries/logpane
+repository: https://github.com/logpane/logpane-flutter-sdk
+issue_tracker: https://github.com/logpane/logpane-flutter-sdk/issues
+topics:
+  - analytics
+  - error-tracking
+  - monitoring
+  - self-hosted
 
 environment:
   sdk: '>=3.2.0 <4.0.0'

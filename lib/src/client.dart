@@ -137,7 +137,6 @@ class Logpane with WidgetsBindingObserver {
       apiKey: apiKey,
     );
 
-    late final LogpaneNavigatorObserver navigatorObserver;
     final instance = Logpane._(
       config: config,
       eventQueue: eventQueue,
@@ -421,6 +420,7 @@ class Logpane with WidgetsBindingObserver {
         'session_id': _sessionTracker.currentSessionId,
         'user_id': _userId,
         'anonymous_id': _anonymousId,
+        if (_userTraits != null) 'user_traits': _userTraits,
         if (screenName != null) 'screen_name': screenName,
         'context': _buildContext(),
       },
