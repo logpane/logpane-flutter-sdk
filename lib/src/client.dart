@@ -11,6 +11,9 @@ import 'session_tracker.dart';
 
 /// Configuration for the Logpane SDK.
 class LogpaneConfig {
+  /// The Logpane API endpoint.
+  static const String _defaultEndpoint = 'https://api.logpane.dev';
+
   /// The base URL of the Logpane API server.
   final String endpoint;
 
@@ -30,8 +33,8 @@ class LogpaneConfig {
   final bool enableInDebug;
 
   const LogpaneConfig({
-    required this.endpoint,
     required this.apiKey,
+    this.endpoint = _defaultEndpoint,
     this.flushIntervalSeconds = 30,
     this.maxBatchSize = 50,
     this.maxQueueSize = 1000,
@@ -92,7 +95,6 @@ class Logpane with WidgetsBindingObserver {
   /// Must be called before accessing [instance]. Typically called in main()
   /// after [WidgetsFlutterBinding.ensureInitialized].
   static Future<Logpane> init({
-    required String endpoint,
     required String apiKey,
     int flushIntervalSeconds = 30,
     int maxBatchSize = 50,
@@ -103,8 +105,9 @@ class Logpane with WidgetsBindingObserver {
       return _instance!;
     }
 
+    const endpoint = LogpaneConfig._defaultEndpoint;
+
     final config = LogpaneConfig(
-      endpoint: endpoint,
       apiKey: apiKey,
       flushIntervalSeconds: flushIntervalSeconds,
       maxBatchSize: maxBatchSize,
