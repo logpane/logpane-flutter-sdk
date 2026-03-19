@@ -1,6 +1,8 @@
 # Logpane Flutter SDK
 
-Lightweight analytics and error tracking SDK for Flutter. Self-hosted, privacy-friendly.
+Lightweight analytics and error tracking SDK for Flutter. Privacy-friendly event tracking and error monitoring.
+
+> **Note:** This SDK is in active development and not yet ready for production use. The API may change between versions. Use at your own risk.
 
 ## Installation
 
@@ -23,8 +25,7 @@ void main() {
     WidgetsFlutterBinding.ensureInitialized();
 
     await Logpane.init(
-      endpoint: 'https://api.yourdomain.com',
-      apiKey: 'your-api-key',
+      apiKey: 'YOUR_API_KEY',
     );
 
     FlutterError.onError = (details) {
