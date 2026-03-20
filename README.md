@@ -4,6 +4,8 @@ Lightweight analytics and error tracking SDK for Flutter. Privacy-friendly event
 
 > **Note:** This SDK is in active development and not yet ready for production use. The API may change between versions. Use at your own risk.
 
+> **Using an AI coding agent?** Give your agent this link and it will set up Logpane in your project automatically: `https://app.logpane.dev/sdk/integration-guide.txt`
+
 ## Installation
 
 ```yaml
