@@ -1,6 +1,29 @@
+## 0.2.0
+
+- Added multi-source support: new `source` parameter on `Logpane.init()` to tag events by app/platform (e.g. "flutter-mobile", "flutter-admin")
+- Source field included in all analytics and error event payloads
+- Fully backward compatible (defaults to empty string)
+
+## 0.1.4
+
+- Fixed init crashes when called before Flutter bindings are ready
+- Hardened all public methods with null safety and error handling
+- Improved device info collection reliability
+
+## 0.1.3
+
+- Added automatic environment tagging (debug vs production based on `kDebugMode`)
+- Events are always sent regardless of build mode
+
+## 0.1.2
+
+- Added AI agent integration link to README
+
 ## 0.1.1
 
-- Updated package description and metadata
+- Added proper unit tests
+- Removed manual endpoint configuration (uses API key prefix routing)
+- Added development notice to README
 
 ## 0.1.0
 
