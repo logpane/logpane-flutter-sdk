@@ -32,6 +32,11 @@ class LogpaneConfig {
   /// Source identifier for multi-source tracking. Default: ''.
   final String source;
 
+  /// Whether to collect device information (platform, model, OS version, etc.).
+  /// When false, events will have empty device fields but still include
+  /// session and page context. Default: true.
+  final bool collectDeviceInfo;
+
   const LogpaneConfig({
     required this.apiKey,
     this.endpoint = _defaultEndpoint,
@@ -39,6 +44,7 @@ class LogpaneConfig {
     this.maxBatchSize = 50,
     this.maxQueueSize = 1000,
     this.source = '',
+    this.collectDeviceInfo = true,
   });
 }
 
@@ -103,6 +109,7 @@ class Logpane with WidgetsBindingObserver {
     int flushIntervalSeconds = 30,
     int maxBatchSize = 50,
     int maxQueueSize = 1000,
+    bool collectDeviceInfo = true,
   }) async {
     if (_instance != null && _instance!._initialized) {
       return _instance!;
@@ -116,6 +123,7 @@ class Logpane with WidgetsBindingObserver {
       flushIntervalSeconds: flushIntervalSeconds,
       maxBatchSize: maxBatchSize,
       maxQueueSize: maxQueueSize,
+      collectDeviceInfo: collectDeviceInfo,
     );
 
     final eventQueue = EventQueue(maxQueueSize: maxQueueSize);
@@ -144,9 +152,11 @@ class Logpane with WidgetsBindingObserver {
       await eventQueue.initialize();
       await sessionTracker.initialize();
 
-      final deviceInfo = DeviceInfoCollector();
-      await deviceInfo.initialize();
-      instance._deviceInfo = deviceInfo;
+      if (config.collectDeviceInfo) {
+        final deviceInfo = DeviceInfoCollector();
+        await deviceInfo.initialize();
+        instance._deviceInfo = deviceInfo;
+      }
 
       instance._anonymousId = await sessionTracker.getAnonymousId();
 
@@ -237,6 +247,77 @@ class Logpane with WidgetsBindingObserver {
       debugPrint('Logpane: failed to track screen: $e');
     }
   }
+
+  /// Valid log levels for the [log] method.
+  static const _validLogLevels = {'debug', 'info', 'warn', 'error', 'fatal'};
+
+  /// Sends a log event with the specified level and message.
+  ///
+  /// The [level] must be one of: debug, info, warn, error, fatal.
+  /// Optional [metadata] is included in the event properties.
+  ///
+  /// ```dart
+  /// Logpane.instance.log('info', 'User completed onboarding', {
+  ///   'step_count': 5,
+  ///   'duration_ms': 12340,
+  /// });
+  /// ```
+  Future<void> log(
+    String level,
+    String message, {
+    Map<String, dynamic>? metadata,
+  }) async {
+    if (!_initialized || !_enabled) return;
+
+    assert(
+      _validLogLevels.contains(level),
+      'Invalid log level "$level". Must be one of: ${_validLogLevels.join(', ')}',
+    );
+
+    if (!_validLogLevels.contains(level)) {
+      debugPrint('Logpane: invalid log level "$level", ignoring');
+      return;
+    }
+
+    try {
+      final properties = <String, dynamic>{
+        'level': level,
+        'message': message,
+        if (metadata != null) 'metadata': metadata,
+      };
+
+      final event = _buildEvent(
+        type: 'log',
+        eventName: level,
+        eventType: 'log',
+        properties: properties,
+      );
+
+      await _enqueue(event);
+    } catch (e) {
+      debugPrint('Logpane: failed to send log event: $e');
+    }
+  }
+
+  /// Sends a debug-level log event.
+  Future<void> logDebug(String message, {Map<String, dynamic>? metadata}) =>
+      log('debug', message, metadata: metadata);
+
+  /// Sends an info-level log event.
+  Future<void> logInfo(String message, {Map<String, dynamic>? metadata}) =>
+      log('info', message, metadata: metadata);
+
+  /// Sends a warn-level log event.
+  Future<void> logWarn(String message, {Map<String, dynamic>? metadata}) =>
+      log('warn', message, metadata: metadata);
+
+  /// Sends an error-level log event.
+  Future<void> logError(String message, {Map<String, dynamic>? metadata}) =>
+      log('error', message, metadata: metadata);
+
+  /// Sends a fatal-level log event.
+  Future<void> logFatal(String message, {Map<String, dynamic>? metadata}) =>
+      log('fatal', message, metadata: metadata);
 
   /// Captures an error with its stack trace.
   ///
